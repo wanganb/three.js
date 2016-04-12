@@ -1,13 +1,19 @@
-Sidebar.Geometry.PlaneGeometry = function ( signals, object ) {
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
-	var container = new UI.Panel();
+Sidebar.Geometry.PlaneGeometry = function ( editor, object ) {
 
-	var geometry = object.geometry;
+	var signals = editor.signals;
+
+	var container = new UI.Row();
+
+	var parameters = object.geometry.parameters;
 
 	// width
 
-	var widthRow = new UI.Panel();
-	var width = new UI.Number( geometry.width ).onChange( update );
+	var widthRow = new UI.Row();
+	var width = new UI.Number( parameters.width ).onChange( update );
 
 	widthRow.add( new UI.Text( 'Width' ).setWidth( '90px' ) );
 	widthRow.add( width );
@@ -16,8 +22,8 @@ Sidebar.Geometry.PlaneGeometry = function ( signals, object ) {
 
 	// height
 
-	var heightRow = new UI.Panel();
-	var height = new UI.Number( geometry.height ).onChange( update );
+	var heightRow = new UI.Row();
+	var height = new UI.Number( parameters.height ).onChange( update );
 
 	heightRow.add( new UI.Text( 'Height' ).setWidth( '90px' ) );
 	heightRow.add( height );
@@ -26,8 +32,8 @@ Sidebar.Geometry.PlaneGeometry = function ( signals, object ) {
 
 	// widthSegments
 
-	var widthSegmentsRow = new UI.Panel();
-	var widthSegments = new UI.Integer( geometry.widthSegments ).setRange( 1, Infinity ).onChange( update );
+	var widthSegmentsRow = new UI.Row();
+	var widthSegments = new UI.Integer( parameters.widthSegments ).setRange( 1, Infinity ).onChange( update );
 
 	widthSegmentsRow.add( new UI.Text( 'Width segments' ).setWidth( '90px' ) );
 	widthSegmentsRow.add( widthSegments );
@@ -36,8 +42,8 @@ Sidebar.Geometry.PlaneGeometry = function ( signals, object ) {
 
 	// heightSegments
 
-	var heightSegmentsRow = new UI.Panel();
-	var heightSegments = new UI.Integer( geometry.heightSegments ).setRange( 1, Infinity ).onChange( update );
+	var heightSegmentsRow = new UI.Row();
+	var heightSegments = new UI.Integer( parameters.heightSegments ).setRange( 1, Infinity ).onChange( update );
 
 	heightSegmentsRow.add( new UI.Text( 'Height segments' ).setWidth( '90px' ) );
 	heightSegmentsRow.add( heightSegments );
@@ -49,20 +55,12 @@ Sidebar.Geometry.PlaneGeometry = function ( signals, object ) {
 
 	function update() {
 
-		delete object.__webglInit; // TODO: Remove hack (WebGLRenderer refactoring)
-
-		object.geometry.dispose();
-
-		object.geometry = new THREE.PlaneGeometry(
+		editor.execute( new SetGeometryCommand( object, new THREE.PlaneGeometry(
 			width.getValue(),
 			height.getValue(),
 			widthSegments.getValue(),
 			heightSegments.getValue()
-		);
-
-		object.geometry.computeBoundingSphere();
-
-		signals.objectChanged.dispatch( object );
+		) ) );
 
 	}
 

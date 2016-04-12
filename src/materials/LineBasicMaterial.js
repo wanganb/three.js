@@ -6,13 +6,13 @@
  *  color: <hex>,
  *  opacity: <float>,
  *
- *  blending: THREE.NormalBlending,
- *  depthTest: <bool>,
- *  depthWrite: <bool>,
- *
  *  linewidth: <float>,
  *  linecap: "round",
  *  linejoin: "round",
+ *
+ *  blending: THREE.NormalBlending,
+ *  depthTest: <bool>,
+ *  depthWrite: <bool>,
  *
  *  vertexColors: <bool>
  *
@@ -24,13 +24,17 @@ THREE.LineBasicMaterial = function ( parameters ) {
 
 	THREE.Material.call( this );
 
+	this.type = 'LineBasicMaterial';
+
 	this.color = new THREE.Color( 0xffffff );
 
 	this.linewidth = 1;
 	this.linecap = 'round';
 	this.linejoin = 'round';
 
-	this.vertexColors = false;
+	this.blending = THREE.NormalBlending;
+
+	this.vertexColors = THREE.NoColors;
 
 	this.fog = true;
 
@@ -39,23 +43,22 @@ THREE.LineBasicMaterial = function ( parameters ) {
 };
 
 THREE.LineBasicMaterial.prototype = Object.create( THREE.Material.prototype );
+THREE.LineBasicMaterial.prototype.constructor = THREE.LineBasicMaterial;
 
-THREE.LineBasicMaterial.prototype.clone = function () {
+THREE.LineBasicMaterial.prototype.copy = function ( source ) {
 
-	var material = new THREE.LineBasicMaterial();
+	THREE.Material.prototype.copy.call( this, source );
 
-	THREE.Material.prototype.clone.call( this, material );
+	this.color.copy( source.color );
 
-	material.color.copy( this.color );
+	this.linewidth = source.linewidth;
+	this.linecap = source.linecap;
+	this.linejoin = source.linejoin;
 
-	material.linewidth = this.linewidth;
-	material.linecap = this.linecap;
-	material.linejoin = this.linejoin;
+	this.vertexColors = source.vertexColors;
 
-	material.vertexColors = this.vertexColors;
+	this.fog = source.fog;
 
-	material.fog = this.fog;
-
-	return material;
+	return this;
 
 };

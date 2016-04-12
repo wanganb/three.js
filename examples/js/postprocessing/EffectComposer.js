@@ -8,11 +8,14 @@ THREE.EffectComposer = function ( renderer, renderTarget ) {
 
 	if ( renderTarget === undefined ) {
 
-		var width = window.innerWidth || 1;
-		var height = window.innerHeight || 1;
-		var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
-
-		renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
+		var parameters = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBAFormat,
+			stencilBuffer: false
+		};
+		var size = renderer.getSize();
+		renderTarget = new THREE.WebGLRenderTarget( size.width, size.height, parameters );
 
 	}
 
@@ -66,7 +69,7 @@ THREE.EffectComposer.prototype = {
 
 			pass = this.passes[ i ];
 
-			if ( !pass.enabled ) continue;
+			if ( ! pass.enabled ) continue;
 
 			pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
 
@@ -106,13 +109,15 @@ THREE.EffectComposer.prototype = {
 
 		if ( renderTarget === undefined ) {
 
-			renderTarget = this.renderTarget1.clone();
+			var size = this.renderer.getSize();
 
-			renderTarget.width = window.innerWidth;
-			renderTarget.height = window.innerHeight;
+			renderTarget = this.renderTarget1.clone();
+			renderTarget.setSize( size.width, size.height );
 
 		}
 
+		this.renderTarget1.dispose();
+		this.renderTarget2.dispose();
 		this.renderTarget1 = renderTarget;
 		this.renderTarget2 = renderTarget.clone();
 
@@ -123,22 +128,9 @@ THREE.EffectComposer.prototype = {
 
 	setSize: function ( width, height ) {
 
-		var renderTarget = this.renderTarget1.clone();
-
-		renderTarget.width = width;
-		renderTarget.height = height;
-
-		this.reset( renderTarget );
+		this.renderTarget1.setSize( width, height );
+		this.renderTarget2.setSize( width, height );
 
 	}
 
 };
-
-// shared ortho camera
-
-THREE.EffectComposer.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
-
-THREE.EffectComposer.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
-
-THREE.EffectComposer.scene = new THREE.Scene();
-THREE.EffectComposer.scene.add( THREE.EffectComposer.quad );

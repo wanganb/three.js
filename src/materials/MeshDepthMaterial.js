@@ -5,10 +5,6 @@
  * parameters = {
  *  opacity: <float>,
  *
- *  blending: THREE.NormalBlending,
- *  depthTest: <bool>,
- *  depthWrite: <bool>,
- *
  *  wireframe: <boolean>,
  *  wireframeLinewidth: <float>
  * }
@@ -18,6 +14,9 @@ THREE.MeshDepthMaterial = function ( parameters ) {
 
 	THREE.Material.call( this );
 
+	this.type = 'MeshDepthMaterial';
+
+	this.morphTargets = false;
 	this.wireframe = false;
 	this.wireframeLinewidth = 1;
 
@@ -26,16 +25,15 @@ THREE.MeshDepthMaterial = function ( parameters ) {
 };
 
 THREE.MeshDepthMaterial.prototype = Object.create( THREE.Material.prototype );
+THREE.MeshDepthMaterial.prototype.constructor = THREE.MeshDepthMaterial;
 
-THREE.MeshDepthMaterial.prototype.clone = function () {
+THREE.MeshDepthMaterial.prototype.copy = function ( source ) {
 
-	var material = new THREE.MeshDepthMaterial();
+	THREE.Material.prototype.copy.call( this, source );
 
-	THREE.Material.prototype.clone.call( this, material );
+	this.wireframe = source.wireframe;
+	this.wireframeLinewidth = source.wireframeLinewidth;
 
-	material.wireframe = this.wireframe;
-	material.wireframeLinewidth = this.wireframeLinewidth;
-
-	return material;
+	return this;
 
 };
